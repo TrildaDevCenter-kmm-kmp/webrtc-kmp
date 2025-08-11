@@ -25,8 +25,8 @@ targetSdk = "35"
 # Plugins
 agp = "8.9.3"
 ktlint = "12.2.0"
-nexus = "1.3.0"
 compose-plugin = "1.7.3"
+vanniktech-maven-publish = "0.34.0"
 
 [libraries]
 webrtc-sdk = { module = "io.github.webrtc-sdk:android", version.ref = "webrtc-android-sdk" }
@@ -53,9 +53,9 @@ kotlin-wrappers-mui = { module = "org.jetbrains.kotlin-wrappers:kotlin-mui-mater
 
 [plugins]
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
-nexus = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }

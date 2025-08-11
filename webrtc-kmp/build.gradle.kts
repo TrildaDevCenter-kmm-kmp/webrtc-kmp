@@ -7,9 +7,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.vanniktech.maven.publish)
     kotlin("native.cocoapods")
-    id("maven-publish")
-    id("signing")
 }
 
 group = "com.shepeliev"
@@ -32,7 +31,9 @@ kotlin {
         noPodspec()
 
         pod("WebRTC-SDK") {
-            version = libs.versions.webrtc.ios.sdk.get()
+            version =
+                libs.versions.webrtc.ios.sdk
+                    .get()
             moduleName = "WebRTC"
             packageName = "WebRTC"
         }
@@ -63,12 +64,14 @@ kotlin {
         binaries.executable()
         browser {
             commonWebpackConfig {
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(project.rootDir.path)
+                devServer =
+                    (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                        static =
+                            (static ?: mutableListOf()).apply {
+                                // Serve sources to debug inside browser
+                                add(project.rootDir.path)
+                            }
                     }
-                }
             }
         }
     }
@@ -127,12 +130,18 @@ kotlin {
 android {
     namespace = "com.shepeliev.webrtckmp"
 
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.compileSdk
+            .get()
+            .toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDir("src/androidMain/res")
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk =
+            libs.versions.minSdk
+                .get()
+                .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -142,7 +151,10 @@ android {
     }
 
     testOptions {
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        targetSdk =
+            libs.versions.targetSdk
+                .get()
+                .toInt()
     }
 
     dependencies {
@@ -151,50 +163,37 @@ android {
     }
 }
 
-publishing {
-    publications.all {
-        this as MavenPublication
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 
-        pom {
-            name.set(project.name)
-            description.set("WebRTC Kotlin Multiplatform SDK")
-            url.set("https://github.com/shepeliev/webrtc-kmp")
+    coordinates(project.group.toString(), project.name, "${project.version}")
 
-            scm {
-                url.set("https://github.com/shepeliev/webrtc-kmp")
-                connection.set("scm:git:https://github.com/shepeliev/webrtc-kmp.git")
-                developerConnection.set("scm:git:https://github.com/shepeliev/webrtc-kmp.git")
-                tag.set("HEAD")
-            }
+    pom {
+        name = "WebRTC KMP"
+        description = "WebRTC Kotlin Multiplatform SDK."
+        url = "https://github.com/shepeliev/webrtc-kmp"
 
-            issueManagement {
-                system.set("GitHub Issues")
-                url.set("https://github.com/shepeliev/webrtc-kmp/issues")
-            }
-
-            developers {
-                developer {
-                    name.set("Alex Shepeliev")
-                    email.set("a.shepeliev@gmail.com")
-                }
-            }
-
-            licenses {
-                license {
-                    name.set("The Apache Software License, Version 2.0")
-                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    distribution.set("repo")
-                    comments.set("A business-friendly OSS license")
-                }
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
+
+        developers {
+            developer {
+                id = "shepeliev"
+                name = "Oleksandr Shepeliev"
+                email = "a.shepeliev@gmail.com"
+            }
+        }
+
+        scm {
+            url = "https://github.com/shepeliev/webrtc-kmp"
+            connection = "scm:git:https://github.com/shepeliev/webrtc-kmp.git"
+            developerConnection = "scm:git:https://github.com/shepeliev/webrtc-kmp.git"
+        }
     }
-}
-
-signing {
-    val signingKey: String by rootProject.extra
-    val signingPassword: String by rootProject.extra
-
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
 }
